@@ -95,11 +95,11 @@
 </head>
 
 <body>
-    <h1>随机时间</h1>
+    <h1>随机工具</h1>
 
     <div class="container">
         <div class="operation">
-            <h2>范围限制</h2>
+            <h2>时间范围限制</h2>
             <label for="minTime">最小时间：</label>
             <!-- 只使用 input type="time"，用户只能输入两位小时和两位分钟 -->
             <input type="time" id="minTime" value="00:00">
@@ -118,7 +118,8 @@
             <label for="maxNumber">最大数字：</label>
             <input type="number" id="maxNumber" value="100">
             <h2>操作</h2>
-            <button id="randomNumberButton">随机生成</button>
+            <button id="randomNumberButton">随机生成一个整十的数字</button>
+            <button id="randomNumberButton2">随机生成十个整十的数字</button>
             <button id="resetNumberButton">重置</button>
         </div>
         <div class="result">
@@ -133,6 +134,7 @@
         const minTimeInput = document.getElementById('minTime');
         const maxTimeInput = document.getElementById('maxTime');
         const randomNumberButton = document.getElementById('randomNumberButton');
+        const randomNumberButton2 = document.getElementById('randomNumberButton2');
         const resetNumberButton = document.getElementById('resetNumberButton');
         const minNumberInput = document.getElementById('minNumber');
         const maxNumberInput = document.getElementById('maxNumber');
@@ -287,6 +289,43 @@
             resultArea.appendChild(itemDiv);
         }
 
+        // 生成十个整十数字，用空格连接
+        function generateTenNumbers() {
+            const numbers = [];
+            for (let i = 0; i < 10; i++) {
+                numbers.push(generateRandomNumber());
+            }
+            return numbers.join(' ');
+        }
+
+        // 添加十个数字结果到结果区域
+        function addTenNumberResult() {
+            const numbersStr = generateTenNumbers();
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "time-item";
+
+            const numberText = document.createElement("span");
+            numberText.className = "time-text";
+            numberText.textContent = numbersStr;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.textContent = "复制";
+            copyBtn.onclick = function () {
+                copyToClipboard(numbersStr);
+                // 临时改变按钮文字提示已复制
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "已复制";
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1000);
+            };
+
+            itemDiv.appendChild(numberText);
+            itemDiv.appendChild(copyBtn);
+            resultArea.appendChild(itemDiv);
+        }
+
         // 重置数字范围
         function resetNumber() {
             minNumberInput.value = "0";
@@ -304,6 +343,7 @@
             resetAllResults();
         });
         randomNumberButton.addEventListener('click', addNumberResult);
+        randomNumberButton2.addEventListener('click', addTenNumberResult);
         resetNumberButton.addEventListener('click', function () {
             resetNumber();
             resetAllResults();
