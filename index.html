@@ -111,6 +111,15 @@
             <h2>操作</h2>
             <button id="randomButton">随机生成</button>
             <button id="resetButton">重置</button>
+            <h2>数字范围限制</h2>
+            <label for="minNumber">最小数字：</label>
+            <input type="number" id="minNumber" value="0">
+            <br>
+            <label for="maxNumber">最大数字：</label>
+            <input type="number" id="maxNumber" value="100">
+            <h2>操作</h2>
+            <button id="randomNumberButton">随机生成</button>
+            <button id="resetNumberButton">重置</button>
         </div>
         <div class="result">
             <h2>生成结果</h2>
@@ -123,6 +132,10 @@
         const resetButton = document.getElementById('resetButton');
         const minTimeInput = document.getElementById('minTime');
         const maxTimeInput = document.getElementById('maxTime');
+        const randomNumberButton = document.getElementById('randomNumberButton');
+        const resetNumberButton = document.getElementById('resetNumberButton');
+        const minNumberInput = document.getElementById('minNumber');
+        const maxNumberInput = document.getElementById('maxNumber');
         const resultArea = document.getElementById('resultArea');
 
         function padZero(num) {
@@ -221,14 +234,84 @@
         function resetTime() {
             minTimeInput.value = "00:00";
             maxTimeInput.value = "23:59";
+        }
+
+        // 生成随机数字（整十，个位是零）
+        function generateRandomNumber() {
+            const minNum = parseFloat(minNumberInput.value) || 0;
+            const maxNum = parseFloat(maxNumberInput.value) || 100;
+
+            // 防止min > max
+            const lo = Math.min(minNum, maxNum);
+            const hi = Math.max(minNum, maxNum);
+
+            // 向下取整到最近的整十
+            const loRounded = Math.floor(lo / 10) * 10;
+            const hiRounded = Math.floor(hi / 10) * 10;
+
+            // 计算范围内有多少个整十的数字
+            const count = (hiRounded - loRounded) / 10 + 1;
+
+            // 随机选择一个整十的数字
+            const randomIndex = Math.floor(Math.random() * count);
+            const randomNum = loRounded + randomIndex * 10;
+
+            return randomNum;
+        }
+
+        // 添加数字结果到结果区域
+        function addNumberResult() {
+            const numberStr = generateRandomNumber().toString();
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "time-item";
+
+            const numberText = document.createElement("span");
+            numberText.className = "time-text";
+            numberText.textContent = numberStr;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.textContent = "复制";
+            copyBtn.onclick = function () {
+                copyToClipboard(numberStr);
+                // 临时改变按钮文字提示已复制
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "已复制";
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1000);
+            };
+
+            itemDiv.appendChild(numberText);
+            itemDiv.appendChild(copyBtn);
+            resultArea.appendChild(itemDiv);
+        }
+
+        // 重置数字范围
+        function resetNumber() {
+            minNumberInput.value = "0";
+            maxNumberInput.value = "100";
+        }
+
+        // 重置所有结果
+        function resetAllResults() {
             resultArea.innerHTML = "";
         }
 
         randomButton.addEventListener('click', addTimeResult);
-        resetButton.addEventListener('click', resetTime);
+        resetButton.addEventListener('click', function () {
+            resetTime();
+            resetAllResults();
+        });
+        randomNumberButton.addEventListener('click', addNumberResult);
+        resetNumberButton.addEventListener('click', function () {
+            resetNumber();
+            resetAllResults();
+        });
 
         // 初始化重置
         resetTime();
+        resetNumber();
     </script>
 </body>
 
